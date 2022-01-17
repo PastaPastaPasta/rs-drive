@@ -5,9 +5,9 @@ jobs:
   Build:
     runs-on: ubuntu-latest
     steps:
-    - name: Check out code
-    uses: actions/checkout@v2
-    - name: Build docker images
-    run: cd ci && docker-compose build
-    - name: Do Build
-    run: docker-compose run build
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Build docker images
+        run: cd ci && docker-compose build
+      - name: Do Build
+        run: docker-compose run build
