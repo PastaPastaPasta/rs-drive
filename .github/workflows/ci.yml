@@ -10,4 +10,4 @@ jobs:
       - name: Build docker images
         run: cd ci && docker-compose build
       - name: Do Build
-        run: docker-compose run build
+        run: cd ci && docker-compose run build
