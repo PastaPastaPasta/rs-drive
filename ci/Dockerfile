@@ -120,7 +120,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN export PATH="/dash/.cargo/env:${PATH}"
 RUN export PATH="/dash/.cargo/bin:${PATH}"
 
-# RUN /dash/.cargo/bin/rustup install nightly && /dash/.cargo/bin/rustup default nightly
+RUN /dash/.cargo/bin/rustup install nightly && /dash/.cargo/bin/rustup default nightly
 
 WORKDIR /rs-drive-src
 
