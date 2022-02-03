@@ -152,6 +152,10 @@ fn encode_float(val: f64) -> Result<Vec<u8>, Error> {
 }
 
 mod tests {
+    pub use crate::contract::types::encode_document_field_type;
+    pub use crate::contract::types::DocumentFieldType;
+    pub use ciborium::value::Integer;
+    pub use ciborium::value::Value;
 
     #[test]
     fn test_successful_encode() {
