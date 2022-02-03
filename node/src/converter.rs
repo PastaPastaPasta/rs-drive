@@ -32,14 +32,14 @@ pub fn js_object_to_element<'a, C: Context<'a>>(
         "tree" => {
             let js_buffer = value.downcast_or_throw::<JsBuffer, _>(cx)?;
             let tree_vec = js_buffer_to_vec_u8(js_buffer, cx);
-            return Ok(Element::Tree(tree_vec.try_into().or_else(
+            Ok(Element::Tree(tree_vec.try_into().or_else(
                 |v: Vec<u8>| {
                     return cx.throw_error(format!(
                         "Tree buffer is expected to be 32 bytes long, but got {}",
                         v.len()
                     ));
                 },
-            )?));
+            )?))
         }
         _ => return cx.throw_error(format!("Unexpected element type {}", element_string)),
     }
