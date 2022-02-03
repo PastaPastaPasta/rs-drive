@@ -111,20 +111,20 @@ impl<'a> WhereClause {
             })?
             .clone();
 
-        Ok(WhereClause {
+        Ok(Self {
             field,
             operator,
             value,
         })
     }
 
-    fn lower_bound_clause(where_clauses: &'a [&WhereClause]) -> Result<Option<&'a Self>, Error> {
-        let lower_range_clauses: Vec<&&WhereClause> = where_clauses
+    fn lower_bound_clause(where_clauses: &'a [&Self]) -> Result<Option<&'a Self>, Error> {
+        let lower_range_clauses: Vec<&&Self> = where_clauses
             .iter()
             .filter(|&where_clause| {
                 matches!(where_clause.operator, GreaterThan | GreaterThanOrEquals)
             })
-            .collect::<Vec<&&WhereClause>>();
+            .collect::<Vec<&&Self>>();
         match lower_range_clauses.len() {
             0 => Ok(None),
             1 => Ok(Some(lower_range_clauses.get(0).unwrap())),
@@ -134,11 +134,11 @@ impl<'a> WhereClause {
         }
     }
 
-    fn upper_bound_clause(where_clauses: &'a [&WhereClause]) -> Result<Option<&'a Self>, Error> {
-        let upper_range_clauses: Vec<&&WhereClause> = where_clauses
+    fn upper_bound_clause(where_clauses: &'a [&Self]) -> Result<Option<&'a Self>, Error> {
+        let upper_range_clauses: Vec<&&Self> = where_clauses
             .iter()
             .filter(|&where_clause| matches!(where_clause.operator, LessThan | LessThanOrEquals))
-            .collect::<Vec<&&WhereClause>>();
+            .collect::<Vec<&&Self>>();
         match upper_range_clauses.len() {
             0 => Ok(None),
             1 => Ok(Some(upper_range_clauses.get(0).unwrap())),
@@ -148,9 +148,9 @@ impl<'a> WhereClause {
         }
     }
 
-    fn group_range_clauses(where_clauses: &'a [WhereClause]) -> Result<Option<Self>, Error> {
+    fn group_range_clauses(where_clauses: &'a [Self]) -> Result<Option<Self>, Error> {
         // In order to group range clauses
-        let groupable_range_clauses: Vec<&WhereClause> = where_clauses
+        let groupable_range_clauses: Vec<&Self> = where_clauses
             .iter()
             .filter(|where_clause| match where_clause.operator {
                 Equal => false,
@@ -167,7 +167,7 @@ impl<'a> WhereClause {
             })
             .collect();
 
-        let non_groupable_range_clauses: Vec<&WhereClause> = where_clauses
+        let non_groupable_range_clauses: Vec<&Self> = where_clauses
             .iter()
             .filter(|where_clause| match where_clause.operator {
                 Equal => false,
@@ -210,10 +210,10 @@ impl<'a> WhereClause {
 
                 // we need to find the bounds of the clauses
                 let lower_bounds_clause =
-                    WhereClause::lower_bound_clause(groupable_range_clauses.as_slice())?
+                    Self::lower_bound_clause(groupable_range_clauses.as_slice())?
                         .ok_or_else(lower_upper_error)?;
                 let upper_bounds_clause =
-                    WhereClause::upper_bound_clause(groupable_range_clauses.as_slice())?
+                    Self::upper_bound_clause(groupable_range_clauses.as_slice())?
                         .ok_or_else(lower_upper_error)?;
 
                 let operator = match (lower_bounds_clause.operator, upper_bounds_clause.operator) {
@@ -225,7 +225,7 @@ impl<'a> WhereClause {
                 }
                 .ok_or_else(lower_upper_error)?;
 
-                Ok(Some(WhereClause {
+                Ok(Some(Self {
                     field: groupable_range_clauses.first().unwrap().field.clone(),
                     operator,
                     value: Value::Array(vec![
@@ -657,7 +657,7 @@ impl<'a> OrderClause {
             }
         };
 
-        Ok(OrderClause { field, ascending })
+        Ok(Self { field, ascending })
     }
 }
 

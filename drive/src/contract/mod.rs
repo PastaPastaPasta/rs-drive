@@ -180,7 +180,7 @@ impl Contract {
             );
         }
 
-        Ok(Contract {
+        Ok(Self {
             id: contract_id,
             document_types: contract_document_types,
         })
@@ -267,7 +267,7 @@ impl DocumentType {
         let index_values = match cbor_inner_array_value(document_type_value_map, "indices") {
             Some(index_values) => index_values,
             None => {
-                return Ok(DocumentType {
+                return Ok(Self {
                     name: String::from(name),
                     indices: vec![],
                     properties: document_properties,
@@ -384,7 +384,7 @@ impl DocumentType {
         document_properties.insert(String::from("$createdAt"), types::DocumentFieldType::Date);
         document_properties.insert(String::from("$updatedAt"), types::DocumentFieldType::Date);
 
-        Ok(DocumentType {
+        Ok(Self {
             name: String::from(name),
             indices,
             properties: document_properties,
@@ -465,7 +465,7 @@ impl Document {
         .expect("document_id must be 32 bytes");
 
         // dev-note: properties is everything other than the id and owner id
-        Ok(Document {
+        Ok(Self {
             properties: document,
             owner_id,
             id,
@@ -499,7 +499,7 @@ impl Document {
             .map_err(|_| Error::CorruptedData(String::from("unable to decode contract")))?;
 
         // dev-note: properties is everything other than the id and owner id
-        Ok(Document {
+        Ok(Self {
             properties,
             owner_id: owner_id
                 .try_into()
@@ -623,7 +623,7 @@ impl Index {
             }
         }
 
-        Ok(Index {
+        Ok(Self {
             properties: index_properties,
             unique,
         })
@@ -645,7 +645,7 @@ impl IndexProperty {
 
         let ascending = value == "asc";
 
-        Ok(IndexProperty {
+        Ok(Self {
             name: key.to_string(),
             ascending,
         })

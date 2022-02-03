@@ -1,7 +1,7 @@
 use grovedb::{Element, PathQuery, Query, SizedQuery};
 use neon::{borrow::Borrow, prelude::*};
 
-fn element_to_string(element: &Element) -> &'static str {
+const fn element_to_string(element: &Element) -> &'static str {
     match element {
         Element::Item(_) => "item",
         Element::Reference(_) => "reference",

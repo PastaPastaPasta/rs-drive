@@ -23,7 +23,7 @@ pub const STORAGE_COST: i32 = 50;
 
 impl From<RootTree> for u8 {
     fn from(root_tree: RootTree) -> Self {
-        root_tree as u8
+        root_tree as Self
     }
 }
 
@@ -100,7 +100,7 @@ fn contract_documents_primary_key_path<'a>(
 impl Drive {
     pub fn open<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
         match GroveDb::open(path) {
-            Ok(grove) => Ok(Drive { grove }),
+            Ok(grove) => Ok(Self { grove }),
             Err(e) => Err(e),
         }
     }
@@ -118,7 +118,7 @@ impl Drive {
                 .try_into()
                 .expect("slice with incorrect length");
             let version = u32::from_be_bytes(version_set_bytes);
-            Drive::check_protocol_version(version)
+            Self::check_protocol_version(version)
         }
     }
 
