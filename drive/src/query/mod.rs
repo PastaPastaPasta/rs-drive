@@ -958,17 +958,14 @@ impl<'a> DriveQuery<'a> {
                     match query {
                         None => {}
                         Some(query) => {
-                            match unique {
-                                true => {
-                                    query.set_subquery_key(vec![0]);
-                                }
-                                false => {
-                                    query.set_subquery_key(vec![0]);
-                                    // we just get all by document id order ascending
-                                    let mut full_query = Query::new();
-                                    full_query.insert_all();
-                                    query.set_subquery(full_query);
-                                }
+                            if unique {
+                                query.set_subquery_key(vec![0]);
+                            } else {
+                                query.set_subquery_key(vec![0]);
+                                // we just get all by document id order ascending
+                                let mut full_query = Query::new();
+                                full_query.insert_all();
+                                query.set_subquery(full_query);
                             }
                         }
                     }
