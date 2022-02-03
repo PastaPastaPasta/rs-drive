@@ -203,7 +203,7 @@ impl DriveWrapper {
     fn js_open(mut cx: FunctionContext) -> JsResult<JsBox<Self>> {
         let drive_wrapper = Self::new(&mut cx).or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.boxed(drive_wrapper))
+        return Ok(cx.boxed(drive_wrapper));
     }
 
     /// Sends a message to the DB thread to stop the thread and dispose the
@@ -229,7 +229,7 @@ impl DriveWrapper {
             })
             .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_create_root_tree(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -259,7 +259,7 @@ impl DriveWrapper {
             })
             .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_apply_contract(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -303,7 +303,7 @@ impl DriveWrapper {
             })
             .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_add_document_for_contract_cbor(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -359,7 +359,7 @@ impl DriveWrapper {
             })
             .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_update_document_for_contract_cbor(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -412,7 +412,7 @@ impl DriveWrapper {
             })
             .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_delete_document_for_contract_cbor(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -463,7 +463,7 @@ impl DriveWrapper {
             })
             .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_create_and_execute_query(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -515,7 +515,7 @@ impl DriveWrapper {
             })
             .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_start_transaction(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -536,7 +536,7 @@ impl DriveWrapper {
         })
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_commit_transaction(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -557,7 +557,7 @@ impl DriveWrapper {
         })
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_rollback_transaction(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -578,7 +578,7 @@ impl DriveWrapper {
         })
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_is_transaction_started(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -608,7 +608,7 @@ impl DriveWrapper {
         })
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_abort_transaction(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -629,7 +629,7 @@ impl DriveWrapper {
         })
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_get(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -678,7 +678,7 @@ impl DriveWrapper {
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
         // The result is returned through the callback, not through direct return
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_insert(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -720,7 +720,7 @@ impl DriveWrapper {
         })
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_insert_if_not_exists(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -768,7 +768,7 @@ impl DriveWrapper {
         })
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_put_aux(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -812,7 +812,7 @@ impl DriveWrapper {
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
         // The result is returned through the callback, not through direct return
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_delete_aux(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -851,7 +851,7 @@ impl DriveWrapper {
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
         // The result is returned through the callback, not through direct return
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_get_aux(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -896,7 +896,7 @@ impl DriveWrapper {
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
         // The result is returned through the callback, not through direct return
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_get_path_query(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -942,12 +942,12 @@ impl DriveWrapper {
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
         // The result is returned through the callback, not through direct return
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     /// Not implemented
     fn js_grove_db_proof(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     /// Flush data on disc and then calls js callback passed as a first
@@ -970,7 +970,7 @@ impl DriveWrapper {
         })
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     /// Returns root hash or empty buffer
@@ -1007,7 +1007,7 @@ impl DriveWrapper {
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
         // The result is returned through the callback, not through direct return
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 
     fn js_grove_db_delete(mut cx: FunctionContext) -> JsResult<JsUndefined> {
@@ -1052,7 +1052,7 @@ impl DriveWrapper {
         .or_else(|err| cx.throw_error(err.to_string()))?;
 
         // The result is returned through the callback, not through direct return
-        Ok(cx.undefined())
+        return Ok(cx.undefined());
     }
 }
 

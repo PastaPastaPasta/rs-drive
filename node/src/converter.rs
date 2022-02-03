@@ -32,16 +32,16 @@ pub fn js_object_to_element<'a, C: Context<'a>>(
         "tree" => {
             let js_buffer = value.downcast_or_throw::<JsBuffer, _>(cx)?;
             let tree_vec = js_buffer_to_vec_u8(js_buffer, cx);
-            Ok(Element::Tree(tree_vec.try_into().or_else(
+            return Ok(Element::Tree(tree_vec.try_into().or_else(
                 |v: Vec<u8>| {
-                    cx.throw_error(format!(
+                    return cx.throw_error(format!(
                         "Tree buffer is expected to be 32 bytes long, but got {}",
                         v.len()
-                    ))
+                    ));
                 },
-            )?))
+            )?));
         }
-        _ => cx.throw_error(format!("Unexpected element type {}", element_string)),
+        _ => return cx.throw_error(format!("Unexpected element type {}", element_string)),
     }
 }
 
@@ -66,7 +66,7 @@ pub fn element_to_js_object<'a, C: Context<'a>>(
     };
 
     js_object.set(cx, "value", js_value)?;
-    NeonResult::Ok(js_object.upcast())
+    return NeonResult::Ok(js_object.upcast());
 }
 
 pub fn nested_vecs_to_js<'a, C: Context<'a>>(
@@ -81,7 +81,7 @@ pub fn nested_vecs_to_js<'a, C: Context<'a>>(
         js_array.set(cx, index as u32, js_value)?;
     }
 
-    Ok(js_array.upcast())
+    return Ok(js_array.upcast());
 }
 
 pub fn js_buffer_to_vec_u8<'a, C: Context<'a>>(js_buffer: Handle<JsBuffer>, cx: &mut C) -> Vec<u8> {
@@ -114,7 +114,7 @@ pub fn js_value_to_option<'a, T: Value, C: Context<'a>>(
     if js_value.is_a::<JsNull, _>(cx) || js_value.is_a::<JsUndefined, _>(cx) {
         Ok(None)
     } else {
-        Ok(Some(js_value.downcast_or_throw::<T, _>(cx)?))
+        return Ok(Some(js_value.downcast_or_throw::<T, _>(cx)?));
     }
 }
 
@@ -123,12 +123,12 @@ fn js_object_get_vec_u8<'a, C: Context<'a>>(
     field: &str,
     cx: &mut C,
 ) -> NeonResult<Vec<u8>> {
-    Ok(js_buffer_to_vec_u8(
+    return Ok(js_buffer_to_vec_u8(
         js_object
             .get(cx, field)?
             .downcast_or_throw::<JsBuffer, _>(cx)?,
         cx,
-    ))
+    ));
 }
 
 fn js_object_to_query<'a, C: Context<'a>>(

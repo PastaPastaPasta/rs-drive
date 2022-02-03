@@ -759,7 +759,7 @@ mod tests {
     use crate::common::json_document_to_cbor;
     use crate::contract::Contract;
     use crate::drive::Drive;
-    use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
+    use std::collections::HashMap;
 
     #[test]
     fn test_cbor_deserialization() {
@@ -785,7 +785,7 @@ mod tests {
         assert!(contract.document_types.get("contactRequest").is_some());
         assert!(contract.document_types.get("non_existent_key").is_none());
 
-        let contact_info_indices = &contract.document_types.get("contactInfo").unwrap().indices;
+        let contact_info_indices = &&contract.document_types["contactInfo"].indices;
         assert_eq!(contact_info_indices.len(), 2);
         assert!(contact_info_indices[0].unique);
         assert!(!contact_info_indices[1].unique);

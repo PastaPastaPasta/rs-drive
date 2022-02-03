@@ -765,7 +765,7 @@ mod tests {
     use crate::contract::Document;
     use crate::drive::Drive;
     use rand::Rng;
-    use std::{collections::HashMap, fs::File, io::BufReader, path::Path};
+    use std::collections::HashMap;
     use tempdir::TempDir;
 
     fn setup_dashpay(prefix: &str) -> (Drive, Vec<u8>) {

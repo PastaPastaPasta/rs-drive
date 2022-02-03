@@ -43,7 +43,7 @@ impl Person {
             };
             vec.push(person);
         }
-        vec
+        return vec;
     }
 }
 
@@ -79,7 +79,7 @@ pub fn setup(count: u32, seed: u64) -> (Drive, Contract) {
             .expect("document should be inserted");
     }
     drive.grove.commit_transaction(db_transaction);
-    (drive, contract)
+    return (drive, contract);
 }
 
 // #[test]
@@ -136,7 +136,7 @@ fn test_query_get_all_ordered() {
             let first_name = first_name_value
                 .as_text()
                 .expect("the first name should be a string");
-            String::from(first_name)
+            return String::from(first_name);
         })
         .collect();
 
@@ -232,7 +232,7 @@ fn test_query_name_less_than() {
             let first_name = first_name_value
                 .as_text()
                 .expect("the first name should be a string");
-            String::from(first_name)
+            return String::from(first_name);
         })
         .collect();
 
@@ -282,7 +282,7 @@ fn test_query_starts_with() {
             let first_name = first_name_value
                 .as_text()
                 .expect("the first name should be a string");
-            String::from(first_name)
+            return String::from(first_name);
         })
         .collect();
 
@@ -332,7 +332,7 @@ fn test_query_between() {
             let first_name = first_name_value
                 .as_text()
                 .expect("the first name should be a string");
-            String::from(first_name)
+            return String::from(first_name);
         })
         .collect();
 
@@ -360,7 +360,7 @@ fn test_query_between() {
                 .as_text()
                 .expect("the first name should be a string")
                 .to_string();
-            (name, Vec::from(document.id))
+            return (name, Vec::from(document.id));
         })
         .collect();
 
@@ -404,7 +404,7 @@ fn test_query_between() {
             let first_name = first_name_value
                 .as_text()
                 .expect("the first name should be a string");
-            String::from(first_name)
+            return String::from(first_name);
         })
         .collect();
 
@@ -457,7 +457,7 @@ fn test_query_between() {
             let first_name = first_name_value
                 .as_text()
                 .expect("the first name should be a string");
-            String::from(first_name)
+            return String::from(first_name);
         })
         .collect();
 
@@ -502,7 +502,7 @@ fn test_query_back_elements() {
             let first_name = first_name_value
                 .as_text()
                 .expect("the first name should be a string");
-            String::from(first_name)
+            return String::from(first_name);
         })
         .collect();
 
@@ -548,7 +548,7 @@ fn test_query_specific_names_over_age() {
             let first_name = first_name_value
                 .as_text()
                 .expect("the first name should be a string");
-            String::from(first_name)
+            return String::from(first_name);
         })
         .collect();
 
@@ -601,7 +601,7 @@ fn test_query_specific_over_age() {
             let first_name = first_name_value
                 .as_text()
                 .expect("the first name should be a string");
-            String::from(first_name)
+            return String::from(first_name);
         })
         .collect();
 
@@ -634,7 +634,7 @@ fn test_query_specific_over_age() {
                 .expect("we should be able to get the age");
             let age_integer = age_value.as_integer().expect("age should be an integer");
             let age: u8 = age_integer.try_into().expect("expected u8 value");
-            (name, age)
+            return (name, age);
         })
         .collect();
 
