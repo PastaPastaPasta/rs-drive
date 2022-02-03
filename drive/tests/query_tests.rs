@@ -93,19 +93,6 @@ fn test_query_get_all_ordered() {
 
     // A query getting all elements by firstName
 
-    let all_names = [
-        "Adey".to_string(),
-        "Briney".to_string(),
-        "Cammi".to_string(),
-        "Celinda".to_string(),
-        "Dalia".to_string(),
-        "Gilligan".to_string(),
-        "Kevina".to_string(),
-        "Meta".to_string(),
-        "Noellyn".to_string(),
-        "Prissie".to_string(),
-    ];
-
     let query_value = json!({
         "where": [
         ],
@@ -139,6 +126,11 @@ fn test_query_get_all_ordered() {
             String::from(first_name)
         })
         .collect();
+
+    let all_names = [
+        "Adey", "Briney", "Cammi", "Celinda", "Dalia", "Gilligan", "Kevina", "Meta", "Noellyn",
+        "Prissie",
+    ];
 
     assert_eq!(names, all_names);
 }
@@ -236,12 +228,7 @@ fn test_query_name_less_than() {
         })
         .collect();
 
-    let expected_names_before_chris = [
-        "Adey".to_string(),
-        "Briney".to_string(),
-        "Cammi".to_string(),
-        "Celinda".to_string(),
-    ];
+    let expected_names_before_chris = ["Adey", "Briney", "Cammi", "Celinda"];
     assert_eq!(names, expected_names_before_chris);
 }
 
@@ -286,7 +273,7 @@ fn test_query_starts_with() {
         })
         .collect();
 
-    let expected_names_before_chris = ["Cammi".to_string(), "Celinda".to_string()];
+    let expected_names_before_chris = ["Cammi", "Celinda"];
     assert_eq!(names, expected_names_before_chris);
 }
 
@@ -337,14 +324,6 @@ fn test_query_between() {
         .collect();
 
     assert_eq!(names, EXPECTED_BETWEEN_NAMES);
-    // }
-    //
-    // #[test]
-    // fn test_query_between_inclusive_start_at() {
-    let (mut drive, contract) = setup(10, 73509);
-
-    // A query getting all people who's first name is between Chris and Noellyn included
-    // However here there will be a startAt of the ID of Kevina
 
     // Let's first get the ID of Kevina
     let ids: HashMap<String, Vec<u8>> = results
@@ -368,13 +347,24 @@ fn test_query_between() {
         .get("Kevina")
         .expect("We should be able to get back Kevina's Id");
     let kevina_encoded_id = bs58::encode(kevina_id).into_string();
+    assert_eq!(kevina_encoded_id, KEVINA_ENCODING_ID);
+}
+
+static KEVINA_ENCODING_ID: &str = "B4zLoYmSGz5SyD7QjAvcjAWtzGCfnQDCti3o7V2ZBDNo";
+
+#[test]
+fn test_query_between_inclusive_start_at() {
+    let (mut drive, contract) = setup(10, 73509);
+
+    // A query getting all people who's first name is between Chris and Noellyn included
+    // However here there will be a startAt of the ID of Kevina
 
     let query_value = json!({
         "where": [
             ["firstName", ">", "Chris"],
             ["firstName", "<=", "Noellyn"]
         ],
-        "startAt": kevina_encoded_id, //Kevina
+        "startAt": KEVINA_ENCODING_ID, //Kevina
         "limit": 100,
         "orderBy": [
             ["firstName", "asc"]
@@ -408,17 +398,13 @@ fn test_query_between() {
         })
         .collect();
 
-    let expected_reduced_names = [
-        "Kevina".to_string(),
-        "Meta".to_string(),
-        "Noellyn".to_string(),
-    ];
+    let expected_reduced_names = ["Kevina", "Meta", "Noellyn"];
 
     assert_eq!(reduced_names_after, expected_reduced_names);
-    // }
-    //
-    // #[test]
-    // fn test_query_starts_after() {
+}
+
+#[test]
+fn test_query_starts_after() {
     let (mut drive, contract) = setup(10, 73509);
 
     // Now lets try startsAfter
@@ -427,7 +413,7 @@ fn test_query_between() {
             ["firstName", ">", "Chris"],
             ["firstName", "<=", "Noellyn"]
         ],
-        "startAfter": kevina_encoded_id, //Kevina
+        "startAfter": KEVINA_ENCODING_ID, //Kevina
         "limit": 100,
         "orderBy": [
             ["firstName", "asc"]
@@ -461,7 +447,7 @@ fn test_query_between() {
         })
         .collect();
 
-    let expected_reduced_names = ["Meta".to_string(), "Noellyn".to_string()];
+    let expected_reduced_names = ["Meta", "Noellyn"];
 
     assert_eq!(reduced_names_after, expected_reduced_names);
 }
@@ -552,12 +538,7 @@ fn test_query_specific_names_over_age() {
         })
         .collect();
 
-    let expected_names_45_over = [
-        "Dalia".to_string(),
-        "Gilligan".to_string(),
-        "Kevina".to_string(),
-        "Meta".to_string(),
-    ];
+    let expected_names_45_over = ["Dalia", "Gilligan", "Kevina", "Meta"];
 
     assert_eq!(names, expected_names_45_over);
 }
@@ -607,11 +588,7 @@ fn test_query_specific_over_age() {
 
     // Kevina is 48 so she should be now excluded, Dalia is 68, Gilligan is 49 and Meta is 59
 
-    let expected_names_over_48 = [
-        "Dalia".to_string(),
-        "Gilligan".to_string(),
-        "Meta".to_string(),
-    ];
+    let expected_names_over_48 = ["Dalia", "Gilligan", "Meta"];
 
     assert_eq!(names, expected_names_over_48);
 
