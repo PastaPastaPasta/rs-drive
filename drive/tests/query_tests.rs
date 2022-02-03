@@ -336,10 +336,10 @@ fn test_query_between() {
         .collect();
 
     assert_eq!(names, expected_between_names);
-}
-
-#[test]
-fn test_query_between_inclusive_start_at() {
+    // }
+    //
+    // #[test]
+    // fn test_query_between_inclusive_start_at() {
     let (mut drive, contract) = setup(10, 73509);
 
     // A query getting all people who's first name is between Chris and Noellyn included
