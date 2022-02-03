@@ -76,25 +76,25 @@ fn contract_document_type_path<'a>(
     contract_id: &'a [u8],
     document_type_name: &'a str,
 ) -> [&'a [u8]; 4] {
-    [
+    return [
         Into::<&[u8; 1]>::into(RootTree::ContractDocuments),
         contract_id,
         &[1],
         document_type_name.as_bytes(),
-    ]
+    ];
 }
 
 fn contract_documents_primary_key_path<'a>(
     contract_id: &'a [u8],
     document_type_name: &'a str,
 ) -> [&'a [u8]; 5] {
-    [
+    return [
         Into::<&[u8; 1]>::into(RootTree::ContractDocuments),
         contract_id,
         &[1],
         document_type_name.as_bytes(),
         &[0],
-    ]
+    ];
 }
 
 impl Drive {
@@ -105,11 +105,13 @@ impl Drive {
         }
     }
 
+    #[must_use]
     pub const fn check_protocol_version(_version: u32) -> bool {
         // Temporary disabled due protocol version is dynamic and goes from consensus params
         true
     }
 
+    #[must_use]
     pub fn check_protocol_version_bytes(version_bytes: &[u8]) -> bool {
         if version_bytes.len() != 4 {
             false
@@ -302,7 +304,7 @@ impl Drive {
         }
     }
 
-    pub fn add_document(&mut self, document_cbor: &[u8]) -> Result<(), Error> {
+    pub fn add_document(&mut self, _document_cbor: &[u8]) -> Result<(), Error> {
         todo!()
     }
 

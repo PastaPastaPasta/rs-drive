@@ -27,6 +27,7 @@ pub enum WhereOperator {
 }
 
 impl WhereOperator {
+    #[must_use]
     pub const fn is_range(self) -> bool {
         match self {
             Equal => false,
@@ -122,12 +123,12 @@ impl<'a> WhereClause {
         let lower_range_clauses: Vec<&&Self> = where_clauses
             .iter()
             .filter(|&where_clause| {
-                matches!(where_clause.operator, GreaterThan | GreaterThanOrEquals)
+                return matches!(where_clause.operator, GreaterThan | GreaterThanOrEquals);
             })
             .collect::<Vec<&&Self>>();
         match lower_range_clauses.len() {
             0 => Ok(None),
-            1 => Ok(Some(lower_range_clauses.get(0).unwrap())),
+            1 => Ok(Some(lower_range_clauses[0])),
             _ => Err(Error::CorruptedData(String::from(
                 "there can only at most one range clause with a lower bound",
             ))),
@@ -141,7 +142,7 @@ impl<'a> WhereClause {
             .collect::<Vec<&&Self>>();
         match upper_range_clauses.len() {
             0 => Ok(None),
-            1 => Ok(Some(upper_range_clauses.get(0).unwrap())),
+            1 => Ok(Some(upper_range_clauses[0])),
             _ => Err(Error::CorruptedData(String::from(
                 "there can only at most one range clause with a lower bound",
             ))),
@@ -188,7 +189,7 @@ impl<'a> WhereClause {
             if groupable_range_clauses.is_empty() {
                 return Ok(None);
             } else if groupable_range_clauses.len() == 1 {
-                let clause = *groupable_range_clauses.get(0).unwrap();
+                let clause = groupable_range_clauses[0];
                 return Ok(Some(clause.clone()));
             } else if groupable_range_clauses.len() > 2 {
                 return Err(Error::CorruptedData(String::from(
@@ -196,7 +197,7 @@ impl<'a> WhereClause {
                 )));
             } else if groupable_range_clauses
                 .iter()
-                .any(|&z| z.field != groupable_range_clauses.first().unwrap().field)
+                .any(|&z| return z.field != groupable_range_clauses.first().unwrap().field)
             {
                 return Err(Error::CorruptedData(String::from(
                     "all ranges must be on same field",
@@ -235,7 +236,7 @@ impl<'a> WhereClause {
                 }))
             }
         } else if non_groupable_range_clauses.len() == 1 {
-            let where_clause = *non_groupable_range_clauses.get(0).unwrap();
+            let where_clause = non_groupable_range_clauses[0];
             Ok(Some(where_clause.clone()))
         } else {
             // if non_groupable_range_clauses.len() > 1
@@ -263,10 +264,9 @@ impl<'a> WhereClause {
                 "when using between operator you must provide an array of exactly two values",
             )));
         }
-        let left_key = document_type
-            .serialize_value_for_key(self.field.as_str(), in_values.get(0).unwrap())?;
-        let right_key = document_type
-            .serialize_value_for_key(self.field.as_str(), in_values.get(1).unwrap())?;
+        let left_key = document_type.serialize_value_for_key(self.field.as_str(), &in_values[0])?;
+        let right_key =
+            document_type.serialize_value_for_key(self.field.as_str(), &in_values[1])?;
         Ok((left_key, right_key))
     }
 
@@ -639,7 +639,7 @@ impl<'a> OrderClause {
         })?;
         let field = String::from(field_ref);
 
-        let asc_string_value = clause_components.get(1).unwrap();
+        let asc_string_value = &clause_components[1];
         let asc_string = match asc_string_value {
             Value::Text(asc_string) => Some(asc_string.as_str()),
             _ => None,
@@ -682,7 +682,9 @@ impl<'a> DriveQuery<'a> {
         document_type: &'a DocumentType,
     ) -> Result<Self, Error> {
         let query_document: HashMap<String, CborValue> = ciborium::de::from_reader(query_cbor)
-            .map_err(|err| Error::CorruptedData(format!("unable to decode query: {}", err)))?;
+            .map_err(|err| {
+                return Error::CorruptedData(format!("unable to decode query: {}", err));
+            })?;
 
         let limit: u16 = query_document
             .get("limit")
@@ -787,7 +789,7 @@ impl<'a> DriveQuery<'a> {
                         })
                         .collect()
                 } else {
-                    vec![]
+                    return vec![];
                 }
             })
             .iter()
@@ -810,8 +812,8 @@ impl<'a> DriveQuery<'a> {
 
     pub fn execute_with_proof(
         self,
-        grove: &mut GroveDb,
-        transaction: Option<&OptimisticTransactionDBTransaction>,
+        _grove: &mut GroveDb,
+        _transaction: Option<&OptimisticTransactionDBTransaction>,
     ) -> Result<Vec<u8>, Error> {
         todo!()
     }
@@ -896,7 +898,7 @@ impl<'a> DriveQuery<'a> {
         let ordered_clauses: Vec<&WhereClause> = index
             .properties
             .iter()
-            .filter_map(|field| self.equal_clauses.get(field.name.as_str()))
+            .filter_map(|field| return self.equal_clauses.get(field.name.as_str()))
             .collect();
         let (last_clause, last_clause_is_range, subquery_clause) = match &self.in_clause {
             None => match &self.range_clause {
@@ -914,36 +916,36 @@ impl<'a> DriveQuery<'a> {
             .properties
             .iter()
             .filter(|field| {
-                !(self.equal_clauses.get(field.name.as_str()).is_some()
+                return !(self.equal_clauses.get(field.name.as_str()).is_some()
                     || (last_clause.is_some() && last_clause.unwrap().field == field.name)
-                    || (subquery_clause.is_some() && subquery_clause.unwrap().field == field.name))
+                    || (subquery_clause.is_some()
+                        && subquery_clause.unwrap().field == field.name));
             })
             .collect::<Vec<&IndexProperty>>();
-        let intermediate_values =
-            index
-                .properties
-                .iter()
-                .filter_map(|field| {
-                    match self.equal_clauses.get(field.name.as_str()) {
-                        None => None,
-                        Some(where_clause) => {
-                            if self.order_by.is_empty()
-                                && !last_clause_is_range
-                                && last_clause.is_some()
-                                && last_clause.unwrap().field == field.name
-                            {
-                                //there is no need to give an intermediate value as the last clause is an equality
-                                None
-                            } else {
-                                Some(self.document_type.serialize_value_for_key(
-                                    field.name.as_str(),
-                                    &where_clause.value,
-                                ))
-                            }
+        let intermediate_values = index
+            .properties
+            .iter()
+            .filter_map(|field| {
+                match self.equal_clauses.get(field.name.as_str()) {
+                    None => None,
+                    Some(where_clause) => {
+                        if self.order_by.is_empty()
+                            && !last_clause_is_range
+                            && last_clause.is_some()
+                            && last_clause.unwrap().field == field.name
+                        {
+                            //there is no need to give an intermediate value as the last clause is an equality
+                            None
+                        } else {
+                            return Some(self.document_type.serialize_value_for_key(
+                                field.name.as_str(),
+                                &where_clause.value,
+                            ));
                         }
                     }
-                })
-                .collect::<Result<Vec<Vec<u8>>, Error>>()?;
+                }
+            })
+            .collect::<Result<Vec<Vec<u8>>, Error>>()?;
 
         let (intermediate_indexes, last_indexes) =
             index.properties.split_at(intermediate_values.len());

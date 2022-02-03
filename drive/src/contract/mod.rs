@@ -56,6 +56,7 @@ impl Index {
     // The return value for name == 'Sam' sort by age would be 0
     // The return value for name == 'Sam and age > 5 sort by age would be 0
     // the return value for sort by age would be 1
+    #[must_use]
     pub fn matches(
         &self,
         index_names: &[&str],
@@ -76,11 +77,11 @@ impl Index {
                     .iter()
                     .rev()
                     .zip(order_by.iter().rev())
-                    .all(|(property, &sort)| property.name.as_str() == sort);
+                    .all(|(property, &sort)| return property.name.as_str() == sort);
                 if matched_ordering {
                     break;
                 }
-                if let Some((last, elements)) = reduced_properties.split_last() {
+                if let Some((_last, elements)) = reduced_properties.split_last() {
                     // should_ignore.push(last.name.clone());
                     reduced_properties = elements;
                 } else {
@@ -110,7 +111,7 @@ impl Index {
         for search_name in index_names.iter() {
             if !reduced_properties
                 .iter()
-                .any(|property| property.name.as_str() == *search_name)
+                .any(|property| return property.name.as_str() == *search_name)
             {
                 return None;
             }
@@ -186,6 +187,7 @@ impl Contract {
         })
     }
 
+    #[must_use]
     pub fn root_path(&self) -> [&[u8]; 2] {
         [
             Into::<&[u8; 1]>::into(RootTree::ContractDocuments),
@@ -193,6 +195,7 @@ impl Contract {
         ]
     }
 
+    #[must_use]
     pub fn documents_path(&self) -> [&[u8]; 3] {
         [
             Into::<&[u8; 1]>::into(RootTree::ContractDocuments),
@@ -201,29 +204,32 @@ impl Contract {
         ]
     }
 
+    #[must_use]
     pub fn document_type_path<'a>(&'a self, document_type_name: &'a str) -> [&'a [u8]; 4] {
-        [
+        return [
             Into::<&[u8; 1]>::into(RootTree::ContractDocuments),
             &self.id,
             &[1],
             document_type_name.as_bytes(),
-        ]
+        ];
     }
 
+    #[must_use]
     pub fn documents_primary_key_path<'a>(&'a self, document_type_name: &'a str) -> [&'a [u8]; 5] {
-        [
+        return [
             Into::<&[u8; 1]>::into(RootTree::ContractDocuments),
             &self.id,
             &[1],
             document_type_name.as_bytes(),
             &[0],
-        ]
+        ];
     }
 }
 
 impl DocumentType {
     // index_names can be in any order
     // in field name must be in the last two indexes.
+    #[must_use]
     pub fn index_for_types(
         &self,
         index_names: &[&str],
@@ -232,7 +238,7 @@ impl DocumentType {
     ) -> Option<(&Index, u16)> {
         let mut best_index: Option<(&Index, u16)> = None;
         let mut best_difference = u16::MAX;
-        for index in self.indices.iter() {
+        for index in &self.indices {
             let difference_option = index.matches(index_names, in_field_name, order_by);
             if let Some(difference) = difference_option {
                 if difference == 0 {
@@ -372,12 +378,7 @@ impl DocumentType {
 
         // Based on the property name, determine the type
         for (property_key, property_value) in property_values {
-            insert_values(
-                &mut document_properties,
-                None,
-                &property_key,
-                &property_value,
-            )?;
+            insert_values(&mut document_properties, None, property_key, property_value)?;
         }
 
         // Add system properties
@@ -714,6 +715,7 @@ fn cbor_inner_bool_value(document_type: &[(Value, Value)], key: &str) -> Option<
     None
 }
 
+#[must_use]
 pub fn bytes_for_system_value(value: &Value) -> Option<Vec<u8>> {
     match value {
         Value::Bytes(bytes) => Some(bytes.clone()),
@@ -749,7 +751,7 @@ fn bytes_for_system_value_from_hash_map(
     document: &HashMap<String, CborValue>,
     key: &str,
 ) -> Option<Vec<u8>> {
-    document.get(key).and_then(bytes_for_system_value)
+    return document.get(key).and_then(bytes_for_system_value);
 }
 
 #[cfg(test)]

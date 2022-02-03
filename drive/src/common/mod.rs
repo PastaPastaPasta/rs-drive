@@ -7,6 +7,7 @@ use std::io::{BufRead, BufReader};
 use std::path::Path;
 use tempdir::TempDir;
 
+#[must_use]
 pub fn setup(prefix: &str) -> Drive {
     // setup code
     let tmp_dir = TempDir::new(prefix).unwrap();
@@ -19,6 +20,7 @@ pub fn setup(prefix: &str) -> Drive {
     drive
 }
 
+#[must_use]
 pub fn setup_contract(prefix: &str, path: &str) -> (Drive, Contract) {
     let mut drive = setup(prefix);
     let contract_cbor = json_document_to_cbor(path, Some(crate::drive::defaults::PROTOCOL_VERSION));
@@ -34,6 +36,7 @@ pub fn json_document_to_cbor(path: impl AsRef<Path>, protocol_version: Option<u3
     value_to_cbor(json, protocol_version)
 }
 
+#[must_use]
 pub fn value_to_cbor(value: serde_json::Value, protocol_version: Option<u32>) -> Vec<u8> {
     let mut buffer: Vec<u8> = Vec::new();
     if let Some(protocol_version) = protocol_version {
