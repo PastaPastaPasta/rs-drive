@@ -87,8 +87,11 @@ pub fn setup(count: u32, seed: u64) -> (Drive, Contract) {
 // }
 
 #[test]
-fn test_query() {
+fn test_query_get_all_ordered() {
     let (mut drive, contract) = setup(10, 73509);
+
+    // A query getting all elements by firstName
+
     let all_names = [
         "Adey".to_string(),
         "Briney".to_string(),
@@ -101,8 +104,6 @@ fn test_query() {
         "Noellyn".to_string(),
         "Prissie".to_string(),
     ];
-
-    // A query getting all elements by firstName
 
     let query_value = json!({
         "where": [
@@ -139,8 +140,13 @@ fn test_query() {
         .collect();
 
     assert_eq!(names, all_names);
+}
 
-    // A query getting all people who's first name is Chris (which is not exist)
+#[test]
+fn test_query_equals_single() {
+    let (mut drive, contract) = setup(10, 73509);
+
+    // A query getting all people who's first name is Adey
 
     let query_value = json!({
         "where": [
@@ -160,6 +166,11 @@ fn test_query() {
         .expect("query should be executed");
 
     assert_eq!(results.len(), 1);
+}
+
+#[test]
+fn test_query_equals_not_present() {
+    let (mut drive, contract) = setup(10, 73509);
 
     // A query getting all people who's first name is Chris (which is not exist)
 
@@ -181,6 +192,11 @@ fn test_query() {
         .expect("query should be executed");
 
     assert_eq!(results.len(), 0);
+}
+
+#[test]
+fn test_query_name_less_than() {
+    let (mut drive, contract) = setup(10, 73509);
 
     // A query getting all people who's first name is before Chris
 
@@ -226,6 +242,11 @@ fn test_query() {
         "Celinda".to_string(),
     ];
     assert_eq!(names, expected_names_before_chris);
+}
+
+#[test]
+fn test_query_starts_with() {
+    let (mut drive, contract) = setup(10, 73509);
 
     // A query getting all people who's first name is before Chris
 
@@ -266,6 +287,13 @@ fn test_query() {
 
     let expected_names_before_chris = ["Cammi".to_string(), "Celinda".to_string()];
     assert_eq!(names, expected_names_before_chris);
+}
+
+static expected_between_names: [&str; 5] = ["Dalia", "Gilligan", "Kevina", "Meta", "Noellyn"];
+
+#[test]
+fn test_query_between() {
+    let (mut drive, contract) = setup(10, 73509);
 
     // A query getting all people who's first name is between Chris and Noellyn included
 
@@ -307,15 +335,12 @@ fn test_query() {
         })
         .collect();
 
-    let expected_between_names = [
-        "Dalia".to_string(),
-        "Gilligan".to_string(),
-        "Kevina".to_string(),
-        "Meta".to_string(),
-        "Noellyn".to_string(),
-    ];
-
     assert_eq!(names, expected_between_names);
+}
+
+#[test]
+fn test_query_between_inclusive_start_at() {
+    let (mut drive, contract) = setup(10, 73509);
 
     // A query getting all people who's first name is between Chris and Noellyn included
     // However here there will be a startAt of the ID of Kevina
@@ -389,9 +414,13 @@ fn test_query() {
     ];
 
     assert_eq!(reduced_names_after, expected_reduced_names);
+    // }
+    //
+    // #[test]
+    // fn test_query_starts_after() {
+    let (mut drive, contract) = setup(10, 73509);
 
     // Now lets try startsAfter
-
     let query_value = json!({
         "where": [
             ["firstName", ">", "Chris"],
@@ -434,12 +463,16 @@ fn test_query() {
     let expected_reduced_names = ["Meta".to_string(), "Noellyn".to_string()];
 
     assert_eq!(reduced_names_after, expected_reduced_names);
+}
 
+#[test]
+fn test_query_back_elements() {
+    let (mut drive, contract) = setup(10, 73509);
     // A query getting back elements having specific names
 
     let query_value = json!({
         "where": [
-            ["firstName", "in", names]
+            ["firstName", "in", expected_between_names]
         ],
         "limit": 100,
         "orderBy": [
@@ -473,12 +506,17 @@ fn test_query() {
         .collect();
 
     assert_eq!(names, expected_between_names);
+}
+
+#[test]
+fn test_query_specific_names_over_age() {
+    let (mut drive, contract) = setup(10, 73509);
 
     // A query getting back elements having specific names and over a certain age
 
     let query_value = json!({
         "where": [
-            ["firstName", "in", names],
+            ["firstName", "in", expected_between_names],
             ["age", ">=", 45]
         ],
         "limit": 100,
@@ -521,12 +559,17 @@ fn test_query() {
     ];
 
     assert_eq!(names, expected_names_45_over);
+}
+
+#[test]
+fn test_query_specific_over_age() {
+    let (mut drive, contract) = setup(10, 73509);
 
     // A query getting back elements having specific names and over a certain age
 
     let query_value = json!({
         "where": [
-            ["firstName", "in", names],
+            ["firstName", "in", expected_between_names],
             ["age", ">", 48]
         ],
         "limit": 100,
