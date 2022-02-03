@@ -791,7 +791,7 @@ impl<'a> DriveQuery<'a> {
                 }
             })
             .iter()
-            .map(|order_clause| Ok((order_clause.field.clone(), order_clause.to_owned())))
+            .map(|order_clause| Ok((order_clause.field.clone(), order_clause.clone())))
             .collect::<Result<IndexMap<String, OrderClause>, Error>>()?;
 
         Ok(DriveQuery {
