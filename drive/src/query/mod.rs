@@ -448,9 +448,9 @@ impl<'a> WhereClause {
                     Some((starts_at_key, included)) => {
                         if left_to_right {
                             if starts_at_key < left_key || (included && starts_at_key == left_key) {
-                                query.insert_range_inclusive(left_key..=right_key)
+                                query.insert_range_inclusive(left_key..=right_key);
                             } else if starts_at_key == left_key {
-                                query.insert_range_after_to_inclusive(left_key..=right_key)
+                                query.insert_range_after_to_inclusive(left_key..=right_key);
                             } else if starts_at_key > left_key && starts_at_key < right_key {
                                 if included {
                                     query.insert_range_inclusive(starts_at_key..=right_key);
@@ -464,9 +464,9 @@ impl<'a> WhereClause {
                         } else if starts_at_key > right_key
                             || (included && starts_at_key == right_key)
                         {
-                            query.insert_range_inclusive(left_key..=right_key)
+                            query.insert_range_inclusive(left_key..=right_key);
                         } else if starts_at_key == right_key {
-                            query.insert_range(left_key..right_key)
+                            query.insert_range(left_key..right_key);
                         } else if starts_at_key > left_key && starts_at_key < right_key {
                             if included {
                                 query.insert_range_inclusive(left_key..=starts_at_key);
@@ -486,7 +486,7 @@ impl<'a> WhereClause {
                     Some((starts_at_key, included)) => {
                         if left_to_right {
                             if starts_at_key <= left_key {
-                                query.insert_range_after_to(left_key..right_key)
+                                query.insert_range_after_to(left_key..right_key);
                             } else if starts_at_key > left_key && starts_at_key < right_key {
                                 if included {
                                     query.insert_range(starts_at_key..right_key);
@@ -495,9 +495,9 @@ impl<'a> WhereClause {
                                 }
                             }
                         } else if starts_at_key > right_key {
-                            query.insert_range_inclusive(left_key..=right_key)
+                            query.insert_range_inclusive(left_key..=right_key);
                         } else if starts_at_key == right_key {
-                            query.insert_range(left_key..right_key)
+                            query.insert_range(left_key..right_key);
                         } else if starts_at_key > left_key && starts_at_key < right_key {
                             if included {
                                 query.insert_range_after_to_inclusive(left_key..=starts_at_key);
@@ -515,7 +515,7 @@ impl<'a> WhereClause {
                     Some((starts_at_key, included)) => {
                         if left_to_right {
                             if starts_at_key <= left_key {
-                                query.insert_range_after_to_inclusive(left_key..=right_key)
+                                query.insert_range_after_to_inclusive(left_key..=right_key);
                             } else if starts_at_key > left_key && starts_at_key < right_key {
                                 if included {
                                     query.insert_range_inclusive(starts_at_key..=right_key);
@@ -529,7 +529,7 @@ impl<'a> WhereClause {
                         } else if starts_at_key > right_key
                             || (included && starts_at_key == right_key)
                         {
-                            query.insert_range_after_to_inclusive(left_key..=right_key)
+                            query.insert_range_after_to_inclusive(left_key..=right_key);
                         } else if starts_at_key > left_key && starts_at_key < right_key {
                             if included {
                                 query.insert_range_inclusive(left_key..=starts_at_key);
@@ -547,9 +547,9 @@ impl<'a> WhereClause {
                     Some((starts_at_key, included)) => {
                         if left_to_right {
                             if starts_at_key < left_key || (included && starts_at_key == left_key) {
-                                query.insert_range(left_key..right_key)
+                                query.insert_range(left_key..right_key);
                             } else if starts_at_key == left_key {
-                                query.insert_range_after_to(left_key..right_key)
+                                query.insert_range_after_to(left_key..right_key);
                             } else if starts_at_key > left_key && starts_at_key < right_key {
                                 if included {
                                     query.insert_range(starts_at_key..right_key);
@@ -558,7 +558,7 @@ impl<'a> WhereClause {
                                 }
                             }
                         } else if starts_at_key >= right_key {
-                            query.insert_range(left_key..right_key)
+                            query.insert_range(left_key..right_key);
                         } else if starts_at_key > left_key && starts_at_key < right_key {
                             if included {
                                 query.insert_range_inclusive(left_key..=starts_at_key);
@@ -586,9 +586,9 @@ impl<'a> WhereClause {
                     Some((starts_at_key, included)) => {
                         if left_to_right {
                             if starts_at_key < left_key || (included && starts_at_key == left_key) {
-                                query.insert_range(left_key..right_key)
+                                query.insert_range(left_key..right_key);
                             } else if starts_at_key == left_key {
-                                query.insert_range_after_to(left_key..right_key)
+                                query.insert_range_after_to(left_key..right_key);
                             } else if starts_at_key > left_key && starts_at_key < right_key {
                                 if included {
                                     query.insert_range(starts_at_key..right_key);
@@ -597,7 +597,7 @@ impl<'a> WhereClause {
                                 }
                             }
                         } else if starts_at_key >= right_key {
-                            query.insert_range(left_key..right_key)
+                            query.insert_range(left_key..right_key);
                         } else if starts_at_key > left_key && starts_at_key < right_key {
                             if included {
                                 query.insert_range_inclusive(left_key..=starts_at_key);
