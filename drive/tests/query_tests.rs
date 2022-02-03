@@ -290,7 +290,7 @@ fn test_query_starts_with() {
     assert_eq!(names, expected_names_before_chris);
 }
 
-static expected_between_names: [&str; 5] = ["Dalia", "Gilligan", "Kevina", "Meta", "Noellyn"];
+static EXPECTED_BETWEEN_NAMES: [&str; 5] = ["Dalia", "Gilligan", "Kevina", "Meta", "Noellyn"];
 
 #[test]
 fn test_query_between() {
@@ -336,7 +336,7 @@ fn test_query_between() {
         })
         .collect();
 
-    assert_eq!(names, expected_between_names);
+    assert_eq!(names, EXPECTED_BETWEEN_NAMES);
     // }
     //
     // #[test]
@@ -473,7 +473,7 @@ fn test_query_back_elements() {
 
     let query_value = json!({
         "where": [
-            ["firstName", "in", expected_between_names]
+            ["firstName", "in", EXPECTED_BETWEEN_NAMES]
         ],
         "limit": 100,
         "orderBy": [
@@ -506,7 +506,7 @@ fn test_query_back_elements() {
         })
         .collect();
 
-    assert_eq!(names, expected_between_names);
+    assert_eq!(names, EXPECTED_BETWEEN_NAMES);
 }
 
 #[test]
@@ -517,7 +517,7 @@ fn test_query_specific_names_over_age() {
 
     let query_value = json!({
         "where": [
-            ["firstName", "in", expected_between_names],
+            ["firstName", "in", EXPECTED_BETWEEN_NAMES],
             ["age", ">=", 45]
         ],
         "limit": 100,
@@ -570,7 +570,7 @@ fn test_query_specific_over_age() {
 
     let query_value = json!({
         "where": [
-            ["firstName", "in", expected_between_names],
+            ["firstName", "in", EXPECTED_BETWEEN_NAMES],
             ["age", ">", 48]
         ],
         "limit": 100,
