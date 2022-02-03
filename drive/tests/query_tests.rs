@@ -29,11 +29,11 @@ impl Person {
             common::text_file_strings("tests/supporting_files/contract/family/middle-names.txt");
         let last_names =
             common::text_file_strings("tests/supporting_files/contract/family/last-names.txt");
-        let mut vec: Vec<Person> = Vec::with_capacity(count as usize);
+        let mut vec: Vec<Self> = Vec::with_capacity(count as usize);
 
         let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
         for _ in 0..count {
-            let person = Person {
+            let person = Self {
                 id: Vec::from(rng.gen::<[u8; 32]>()),
                 owner_id: Vec::from(rng.gen::<[u8; 32]>()),
                 first_name: first_names.choose(&mut rng).unwrap().clone(),
@@ -47,6 +47,7 @@ impl Person {
     }
 }
 
+#[must_use]
 pub fn setup(count: u32, seed: u64) -> (Drive, Contract) {
     // setup code
     let (mut drive, contract) = common::setup_contract(
@@ -118,7 +119,7 @@ fn test_query_get_all_ordered() {
         .document_types
         .get("person")
         .expect("contract should have a person document type");
-    let query = DriveQuery::from_cbor(where_cbor.as_slice(), &contract, &person_document_type)
+    let query = DriveQuery::from_cbor(where_cbor.as_slice(), &contract, person_document_type)
         .expect("query should be built");
     let (results, _) = query
         .execute_no_proof(&mut drive.grove, None)
@@ -384,7 +385,7 @@ fn test_query_between() {
         .document_types
         .get("person")
         .expect("contract should have a person document type");
-    let query = DriveQuery::from_cbor(where_cbor.as_slice(), &contract, &person_document_type)
+    let query = DriveQuery::from_cbor(where_cbor.as_slice(), &contract, person_document_type)
         .expect("query should be built");
     let (results, _) = query
         .execute_no_proof(&mut drive.grove, None)
@@ -437,7 +438,7 @@ fn test_query_between() {
         .document_types
         .get("person")
         .expect("contract should have a person document type");
-    let query = DriveQuery::from_cbor(where_cbor.as_slice(), &contract, &person_document_type)
+    let query = DriveQuery::from_cbor(where_cbor.as_slice(), &contract, person_document_type)
         .expect("query should be built");
     let (results, _) = query
         .execute_no_proof(&mut drive.grove, None)

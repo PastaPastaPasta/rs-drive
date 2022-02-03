@@ -200,9 +200,8 @@ impl Finalize for DriveWrapper {}
 impl DriveWrapper {
     // Create a new instance of `Drive` and place it inside a `JsBox`
     // JavaScript can hold a reference to a `JsBox`, but the contents are opaque
-    fn js_open(mut cx: FunctionContext) -> JsResult<JsBox<DriveWrapper>> {
-        let drive_wrapper =
-            DriveWrapper::new(&mut cx).or_else(|err| cx.throw_error(err.to_string()))?;
+    fn js_open(mut cx: FunctionContext) -> JsResult<JsBox<Self>> {
+        let drive_wrapper = Self::new(&mut cx).or_else(|err| cx.throw_error(err.to_string()))?;
 
         Ok(cx.boxed(drive_wrapper))
     }
@@ -213,9 +212,7 @@ impl DriveWrapper {
     fn js_close(mut cx: FunctionContext) -> JsResult<JsUndefined> {
         let js_callback = cx.argument::<JsFunction>(0)?.root(&mut cx);
 
-        let drive = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let drive = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         drive
             .close(|channel| {
@@ -239,9 +236,7 @@ impl DriveWrapper {
         let js_using_transaction = cx.argument::<JsBoolean>(0)?;
         let js_callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
 
-        let drive = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let drive = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         let using_transaction = js_using_transaction.value(&mut cx);
 
@@ -272,9 +267,7 @@ impl DriveWrapper {
         let js_using_transaction = cx.argument::<JsBoolean>(1)?;
         let js_callback = cx.argument::<JsFunction>(2)?.root(&mut cx);
 
-        let drive = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let drive = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         let contract_cbor = converter::js_buffer_to_vec_u8(js_contract_cbor, &mut cx);
         let using_transaction = js_using_transaction.value(&mut cx);
@@ -322,9 +315,7 @@ impl DriveWrapper {
         let js_using_transaction = cx.argument::<JsBoolean>(5)?;
         let js_callback = cx.argument::<JsFunction>(6)?.root(&mut cx);
 
-        let drive = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let drive = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         let document_cbor = converter::js_buffer_to_vec_u8(js_document_cbor, &mut cx);
         let contract_cbor = converter::js_buffer_to_vec_u8(js_contract_cbor, &mut cx);
@@ -379,9 +370,7 @@ impl DriveWrapper {
         let js_using_transaction = cx.argument::<JsBoolean>(4)?;
         let js_callback = cx.argument::<JsFunction>(5)?.root(&mut cx);
 
-        let drive = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let drive = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         let document_cbor = converter::js_buffer_to_vec_u8(js_document_cbor, &mut cx);
         let contract_cbor = converter::js_buffer_to_vec_u8(js_contract_cbor, &mut cx);
@@ -433,9 +422,7 @@ impl DriveWrapper {
         let js_using_transaction = cx.argument::<JsBoolean>(3)?;
         let js_callback = cx.argument::<JsFunction>(4)?.root(&mut cx);
 
-        let drive = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let drive = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         let document_id = converter::js_buffer_to_vec_u8(js_document_id, &mut cx);
         let contract_cbor = converter::js_buffer_to_vec_u8(js_contract_cbor, &mut cx);
@@ -486,9 +473,7 @@ impl DriveWrapper {
         let js_using_transaction = cx.argument::<JsBoolean>(3)?;
         let js_callback = cx.argument::<JsFunction>(4)?.root(&mut cx);
 
-        let drive = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let drive = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         let query_cbor = converter::js_buffer_to_vec_u8(js_query_cbor, &mut cx);
         let contract_cbor = converter::js_buffer_to_vec_u8(js_contract_cbor, &mut cx);
@@ -536,9 +521,7 @@ impl DriveWrapper {
     fn js_grove_db_start_transaction(mut cx: FunctionContext) -> JsResult<JsUndefined> {
         let js_callback = cx.argument::<JsFunction>(0)?.root(&mut cx);
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         db.start_transaction(|channel| {
             channel.send(move |mut task_context| {
@@ -559,9 +542,7 @@ impl DriveWrapper {
     fn js_grove_db_commit_transaction(mut cx: FunctionContext) -> JsResult<JsUndefined> {
         let js_callback = cx.argument::<JsFunction>(0)?.root(&mut cx);
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         db.commit_transaction(|channel| {
             channel.send(move |mut task_context| {
@@ -582,9 +563,7 @@ impl DriveWrapper {
     fn js_grove_db_rollback_transaction(mut cx: FunctionContext) -> JsResult<JsUndefined> {
         let js_callback = cx.argument::<JsFunction>(0)?.root(&mut cx);
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         db.rollback_transaction(|channel| {
             channel.send(move |mut task_context| {
@@ -605,9 +584,7 @@ impl DriveWrapper {
     fn js_grove_db_is_transaction_started(mut cx: FunctionContext) -> JsResult<JsUndefined> {
         let js_callback = cx.argument::<JsFunction>(0)?.root(&mut cx);
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         db.send_to_drive_thread(move |drive: &mut Drive, _transaction, channel| {
             let grove_db = &mut drive.grove;
@@ -637,9 +614,7 @@ impl DriveWrapper {
     fn js_grove_db_abort_transaction(mut cx: FunctionContext) -> JsResult<JsUndefined> {
         let js_callback = cx.argument::<JsFunction>(0)?.root(&mut cx);
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         db.abort_transaction(|channel| {
             channel.send(move |mut task_context| {
@@ -667,14 +642,12 @@ impl DriveWrapper {
         let key = converter::js_buffer_to_vec_u8(js_key, &mut cx);
 
         // Get the `this` value as a `JsBox<Database>`
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
         let using_transaction = js_using_transaction.value(&mut cx);
 
         db.send_to_drive_thread(move |drive: &mut Drive, transaction, channel| {
             let grove_db = &drive.grove;
-            let path_slice = path.iter().map(|fragment| fragment.as_slice());
+            let path_slice = path.iter().map(std::vec::Vec::as_slice);
             let result = grove_db.get(
                 path_slice,
                 &key,
@@ -721,13 +694,11 @@ impl DriveWrapper {
         let using_transaction = js_using_transaction.value(&mut cx);
 
         // Get the `this` value as a `JsBox<Database>`
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         db.send_to_drive_thread(move |drive: &mut Drive, transaction, channel| {
             let grove_db = &mut drive.grove;
-            let path_slice = path.iter().map(|fragment| fragment.as_slice());
+            let path_slice = path.iter().map(std::vec::Vec::as_slice);
             let result = grove_db.insert(
                 path_slice,
                 &key,
@@ -765,14 +736,12 @@ impl DriveWrapper {
         let using_transaction = js_using_transaction.value(&mut cx);
 
         // Get the `this` value as a `JsBox<Database>`
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         db.send_to_drive_thread(move |drive: &mut Drive, transaction, channel| {
             let grove_db = &mut drive.grove;
 
-            let path_slice: Vec<&[u8]> = path.iter().map(|fragment| fragment.as_slice()).collect();
+            let path_slice: Vec<&[u8]> = path.iter().map(std::vec::Vec::as_slice).collect();
             let result = grove_db.insert_if_not_exists(
                 path_slice,
                 key.as_slice(),
@@ -811,9 +780,7 @@ impl DriveWrapper {
         let key = converter::js_buffer_to_vec_u8(js_key, &mut cx);
         let value = converter::js_buffer_to_vec_u8(js_value, &mut cx);
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
         let using_transaction = js_using_transaction.value(&mut cx);
 
         db.send_to_drive_thread(move |drive: &mut Drive, transaction, channel| {
@@ -855,9 +822,7 @@ impl DriveWrapper {
 
         let key = converter::js_buffer_to_vec_u8(js_key, &mut cx);
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
         let using_transaction = js_using_transaction.value(&mut cx);
 
         db.send_to_drive_thread(move |drive: &mut Drive, transaction, channel| {
@@ -896,9 +861,7 @@ impl DriveWrapper {
 
         let key = converter::js_buffer_to_vec_u8(js_key, &mut cx);
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
         let using_transaction = js_using_transaction.value(&mut cx);
 
         db.send_to_drive_thread(move |drive: &mut Drive, transaction, channel| {
@@ -943,9 +906,7 @@ impl DriveWrapper {
 
         let path_query = converter::js_path_query_to_path_query(js_path_query, &mut cx)?;
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
         let using_transaction = js_using_transaction.value(&mut cx);
 
         db.send_to_drive_thread(move |drive: &mut Drive, transaction, channel| {
@@ -994,9 +955,7 @@ impl DriveWrapper {
     fn js_grove_db_flush(mut cx: FunctionContext) -> JsResult<JsUndefined> {
         let js_callback = cx.argument::<JsFunction>(0)?.root(&mut cx);
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         db.flush(|channel| {
             channel.send(move |mut task_context| {
@@ -1019,9 +978,7 @@ impl DriveWrapper {
         let js_using_transaction = cx.argument::<JsBoolean>(0)?;
         let js_callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
 
         let using_transaction = js_using_transaction.value(&mut cx);
 
@@ -1062,15 +1019,13 @@ impl DriveWrapper {
         let path = converter::js_array_of_buffers_to_vec(js_path, &mut cx)?;
         let key = converter::js_buffer_to_vec_u8(js_key, &mut cx);
 
-        let db = cx
-            .this()
-            .downcast_or_throw::<JsBox<DriveWrapper>, _>(&mut cx)?;
+        let db = cx.this().downcast_or_throw::<JsBox<Self>, _>(&mut cx)?;
         let using_transaction = js_using_transaction.value(&mut cx);
 
         db.send_to_drive_thread(move |drive: &mut Drive, transaction, channel| {
             let grove_db = &mut drive.grove;
 
-            let path_slice: Vec<&[u8]> = path.iter().map(|fragment| fragment.as_slice()).collect();
+            let path_slice: Vec<&[u8]> = path.iter().map(std::vec::Vec::as_slice).collect();
             let result = grove_db.delete(
                 path_slice,
                 key.as_slice(),
