@@ -69,27 +69,24 @@ impl InternalClauses {
     }
 
     fn extract_from_clauses(all_where_clauses: Vec<WhereClause>) -> Result<Self, Error> {
-        let primary_key_equal_clauses_array = all_where_clauses
-            .iter()
-            .filter_map(|where_clause| match where_clause.operator {
-                Equal => match where_clause.is_identifier() {
-                    true => Some(where_clause.clone()),
-                    false => None,
-                },
-                _ => None,
-            })
-            .collect::<Vec<WhereClause>>();
+        let mut primary_key_equal_clauses_array: Vec<WhereClause> = vec![];
+        let mut primary_key_in_clauses_array: Vec<WhereClause> = vec![];
 
-        let primary_key_in_clauses_array = all_where_clauses
-            .iter()
-            .filter_map(|where_clause| match where_clause.operator {
-                In => match where_clause.is_identifier() {
-                    true => Some(where_clause.clone()),
-                    false => None,
-                },
-                _ => None,
-            })
-            .collect::<Vec<WhereClause>>();
+        for where_clause in &all_where_clauses {
+            match where_clause.operator {
+                Equal => {
+                    if let true = where_clause.is_identifier() {
+                        primary_key_equal_clauses_array.push(where_clause.clone())
+                    }
+                }
+                In => {
+                    if let true = where_clause.is_identifier() {
+                        primary_key_in_clauses_array.push(where_clause.clone())
+                    }
+                }
+                _ => {}
+            }
+        }
 
         let (equal_clauses, range_clause, in_clause) =
             WhereClause::group_clauses(&all_where_clauses)?;
