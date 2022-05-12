@@ -74,12 +74,10 @@ pub fn get_key_from_cbor_map<'a>(
     key: &'a str,
 ) -> Option<&'a Value> {
     for (cbor_key, cbor_value) in cbor_map.iter() {
-        if !cbor_key.is_text() {
-            continue;
-        }
-
-        if cbor_key.as_text().expect("confirmed as text") == key {
-            return Some(cbor_value);
+        if let Value::Text(cbor_key_text) = cbor_key {
+            if cbor_key_text == key {
+                return Some(cbor_value);
+            }
         }
     }
     None
