@@ -151,6 +151,96 @@ pub struct IndexProperty {
     pub ascending: bool,
 }
 
+pub struct RootPath {
+    pub root_tree: RootTree,
+    pub id: [u8; 32],
+}
+
+impl RootPath {
+    pub fn to_vec(self) -> Vec<Vec<u8>> {
+        vec![
+            Into::<&[u8; 1]>::into(self.root_tree).to_vec(),
+            self.id.to_vec(),
+        ]
+    }
+}
+
+pub struct DocumentsPath {
+    pub root_path: RootPath,
+    pub unknown: [u8; 1],
+}
+
+impl DocumentsPath {
+    pub fn to_vec(self) -> Vec<Vec<u8>> {
+        let mut ret = self.root_path.to_vec();
+        ret.push(self.unknown.to_vec());
+        ret
+    }
+}
+
+pub struct DocumentTypePath<'a> {
+    pub documents_path: DocumentsPath,
+    pub unknown: &'a [u8],
+}
+
+impl<'a> DocumentTypePath<'a> {
+    // upgrade to DocumentsPrimaryKeyPath
+    pub fn to_documents_primary_key_path(self) -> DocumentsPrimaryKeyPath<'a> {
+        DocumentsPrimaryKeyPath {
+            document_type_path: self,
+            unknown: [0],
+        }
+    }
+    pub fn to_vec(self) -> Vec<Vec<u8>> {
+        let mut ret = self.documents_path.to_vec();
+        ret.push(self.unknown.to_vec());
+        ret
+    }
+}
+
+pub struct DocumentsPrimaryKeyPath<'a> {
+    pub document_type_path: DocumentTypePath<'a>,
+    pub unknown: [u8; 1],
+}
+
+impl<'a> DocumentsPrimaryKeyPath<'a> {
+    pub fn to_vec(self) -> Vec<Vec<u8>> {
+        let mut ret = self.document_type_path.to_vec();
+        ret.push(self.unknown.to_vec());
+        ret
+    }
+}
+
+pub struct DocumentsWithHistoryPrimaryKeyPath<'a> {
+    pub document_type_path: DocumentsPrimaryKeyPath<'a>,
+    pub id: &'a [u8],
+}
+
+impl<'a> DocumentsWithHistoryPrimaryKeyPath<'a> {
+    pub fn to_vec(self) -> Vec<Vec<u8>> {
+        let mut ret = self.document_type_path.to_vec();
+        ret.push(self.id.to_vec());
+        ret
+    }
+}
+
+pub struct DocumentTypePathAdditional<'a> {
+    pub document_type_path: DocumentTypePath<'a>,
+    pub additional: Vec<Vec<u8>>,
+}
+
+impl<'a> DocumentTypePathAdditional<'a> {
+    pub fn new(document_type_path: DocumentTypePath) -> DocumentTypePathAdditional {
+        DocumentTypePathAdditional {
+            document_type_path,
+            additional: vec![],
+        }
+    }
+    pub fn to_vec(self) -> Vec<Vec<u8>> {
+        [self.document_type_path.to_vec(), self.additional].concat()
+    }
+}
+
 // Struct Implementations
 impl Contract {
     pub fn from_cbor(contract_cbor: &[u8], contract_id: Option<[u8; 32]>) -> Result<Self, Error> {
@@ -272,53 +362,46 @@ impl Contract {
         })
     }
 
-    pub fn root_path(&self) -> [&[u8]; 2] {
-        [
-            Into::<&[u8; 1]>::into(RootTree::ContractDocuments),
-            &self.id,
-        ]
+    pub fn root_path(&self) -> RootPath {
+        RootPath {
+            root_tree: RootTree::ContractDocuments,
+            id: self.id,
+        }
     }
 
-    pub fn documents_path(&self) -> [&[u8]; 3] {
-        [
-            Into::<&[u8; 1]>::into(RootTree::ContractDocuments),
-            &self.id,
-            &[1],
-        ]
+    pub fn documents_path(&self) -> DocumentsPath {
+        DocumentsPath {
+            root_path: self.root_path(),
+            unknown: [1],
+        }
     }
 
-    pub fn document_type_path<'a>(&'a self, document_type_name: &'a str) -> [&'a [u8]; 4] {
-        [
-            Into::<&[u8; 1]>::into(RootTree::ContractDocuments),
-            &self.id,
-            &[1],
-            document_type_name.as_bytes(),
-        ]
+    pub fn document_type_path<'a>(&'a self, document_type_name: &'a str) -> DocumentTypePath<'a> {
+        DocumentTypePath {
+            documents_path: self.documents_path(),
+            unknown: document_type_name.as_bytes(),
+        }
     }
 
-    pub fn documents_primary_key_path<'a>(&'a self, document_type_name: &'a str) -> [&'a [u8]; 5] {
-        [
-            Into::<&[u8; 1]>::into(RootTree::ContractDocuments),
-            &self.id,
-            &[1],
-            document_type_name.as_bytes(),
-            &[0],
-        ]
+    pub fn documents_primary_key_path<'a>(
+        &'a self,
+        document_type_name: &'a str,
+    ) -> DocumentsPrimaryKeyPath<'a> {
+        DocumentsPrimaryKeyPath {
+            document_type_path: self.document_type_path(document_type_name),
+            unknown: [0],
+        }
     }
 
     pub fn documents_with_history_primary_key_path<'a>(
         &'a self,
         document_type_name: &'a str,
         id: &'a [u8],
-    ) -> [&'a [u8]; 6] {
-        [
-            Into::<&[u8; 1]>::into(RootTree::ContractDocuments),
-            &self.id,
-            &[1],
-            document_type_name.as_bytes(),
-            &[0],
+    ) -> DocumentsWithHistoryPrimaryKeyPath {
+        DocumentsWithHistoryPrimaryKeyPath {
+            document_type_path: self.documents_primary_key_path(document_type_name),
             id,
-        ]
+        }
     }
 
     pub fn document_type_for_name(&self, document_type_name: &str) -> Result<&DocumentType, Error> {

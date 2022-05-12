@@ -4,7 +4,10 @@ pub mod ordering;
 mod test_index;
 
 use crate::common::bytes_for_system_value;
-use crate::contract::{Contract, Document, DocumentType, Index, IndexProperty};
+use crate::contract::{
+    Contract, Document, DocumentType, DocumentTypePath, DocumentTypePathAdditional,
+    DocumentsPrimaryKeyPath, Index, IndexProperty,
+};
 use crate::drive::object_size_info::KeyValueInfo;
 use crate::drive::Drive;
 use crate::error::drive::DriveError;
@@ -411,10 +414,7 @@ impl<'a> DriveQuery<'a> {
         // First we should get the overall document_type_path
         let document_type_path = self
             .contract
-            .document_type_path(self.document_type.name.as_str())
-            .into_iter()
-            .map(|a| a.to_vec())
-            .collect::<Vec<Vec<u8>>>();
+            .document_type_path(self.document_type.name.as_str());
 
         let starts_at_document: Option<(Document, bool)> = match &self.start_at {
             None => Ok(None),
@@ -429,20 +429,20 @@ impl<'a> DriveQuery<'a> {
                                 self.document_type.name.as_str(),
                                 starts_at,
                             );
-                        (Vec::from(document_holding_path), vec![0])
+                        (document_holding_path.to_vec(), vec![0])
                     } else {
                         let document_holding_path = self
                             .contract
                             .documents_primary_key_path(self.document_type.name.as_str());
-                        (
-                            Vec::from(document_holding_path.as_slice()),
-                            starts_at.clone(),
-                        )
+                        (document_holding_path.to_vec(), starts_at.clone())
                     };
 
                 let start_at_document = drive
                     .grove_get(
-                        start_at_document_path,
+                        start_at_document_path
+                            .iter()
+                            .map(|x| x.as_slice())
+                            .into_iter(),
                         KeyValueInfo::KeyRefRequest(&start_at_document_key),
                         transaction,
                         query_operations,
@@ -483,13 +483,10 @@ impl<'a> DriveQuery<'a> {
 
     pub fn get_primary_key_path_query(
         &self,
-        document_type_path: Vec<Vec<u8>>,
+        document_type_path: DocumentTypePath,
         starts_at_document: Option<(Document, bool)>,
     ) -> Result<PathQuery, Error> {
-        let mut path = document_type_path;
-
-        // Add primary key ($id) subtree
-        path.push(vec![0]);
+        let mut path: DocumentsPrimaryKeyPath = document_type_path.to_documents_primary_key_path();
 
         if let Some(primary_key_equal_clause) = &self.internal_clauses.primary_key_equal_clause {
             let mut query = Query::new();
@@ -510,7 +507,10 @@ impl<'a> DriveQuery<'a> {
                 }
             }
 
-            Ok(PathQuery::new(path, SizedQuery::new(query, Some(1), None)))
+            Ok(PathQuery::new(
+                path.to_vec(),
+                SizedQuery::new(query, Some(1), None),
+            ))
         } else {
             // This is for a range
             let left_to_right = if self.order_by.keys().len() == 1 {
@@ -586,7 +586,7 @@ impl<'a> DriveQuery<'a> {
                 }
 
                 Ok(PathQuery::new(
-                    path,
+                    path.to_vec(),
                     SizedQuery::new(query, Some(self.limit), Some(self.offset)),
                 ))
             } else {
@@ -624,7 +624,7 @@ impl<'a> DriveQuery<'a> {
                 }
 
                 Ok(PathQuery::new(
-                    path,
+                    path.to_vec(),
                     SizedQuery::new(query, Some(self.limit), Some(self.offset)),
                 ))
             }
@@ -685,7 +685,7 @@ impl<'a> DriveQuery<'a> {
 
     pub fn get_non_primary_key_path_query(
         &self,
-        document_type_path: Vec<Vec<u8>>,
+        document_type_path: DocumentTypePath,
         starts_at_document: Option<(Document, bool)>,
     ) -> Result<PathQuery, Error> {
         let index = self.find_best_index()?;
@@ -861,19 +861,20 @@ impl<'a> DriveQuery<'a> {
             QueryError::QueryOnDocumentTypeWithNoIndexes("document query has no index with fields"),
         ))?;
 
-        let mut path = document_type_path;
+        let mut path = DocumentTypePathAdditional::new(document_type_path);
 
         for (intermediate_index, intermediate_value) in
             intermediate_indexes.iter().zip(intermediate_values.iter())
         {
-            path.push(intermediate_index.name.as_bytes().to_vec());
-            path.push(intermediate_value.as_slice().to_vec());
+            path.additional
+                .push(intermediate_index.name.as_bytes().to_vec());
+            path.additional.push(intermediate_value.as_slice().to_vec());
         }
 
-        path.push(last_index.name.as_bytes().to_vec());
+        path.additional.push(last_index.name.as_bytes().to_vec());
 
         Ok(PathQuery::new(
-            path,
+            path.to_vec(),
             SizedQuery::new(final_query, Some(self.limit), Some(self.offset)),
         ))
     }
